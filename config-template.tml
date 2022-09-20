@@ -13,5 +13,5 @@ negative-supply-sell-trigger = 4500 #this determines when to sell spiral
 negative-supply-buy-trigger = 4500 #this and 
 price-fall-percent-trigger = 5 #this determine when to buy back after selling spiral
 slippage-percent = 1,
-private-wallet-key = ""
-json-rpc-endpoint-url = ""
+private-wallet-key = "PASTE_PRIVATE_KEY_HERE"
+json-rpc-endpoint-url = "PASTE_URL_HERE"
