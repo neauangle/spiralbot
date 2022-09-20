@@ -71,7 +71,8 @@ while (true){
         slippagePercent: USER_CONFIG_SLIPPAGE_PERCENT
     });
     
-    console.log("Step 2: Wait for negative supply to hit trigger...");
+    console.log("Step 2: Wait for negative supply to rise and hit trigger...");
+    console.log(`    Supply trigger: ${USER_CONFIG_NEGATIVE_SUPPLY_SELL_TRIGGER}`);
     while (true){
         const negativeSupplyRational = await getNegativeSupplyRational();
         console.log(`    Negative Supply: ${botiq.util.formatRational(negativeSupplyRational, 2)}`)
@@ -98,13 +99,15 @@ while (true){
     });
 
     console.log("Step 5: Wait for negative supply to decrease and price to fall according to trigger settings...");
-    const triggerPriceProportion = 1 - (USER_CONFIG_PRICE_MIN_FALL_TRIGGER_PERCENT / 100)
-    const triggerPriceString = botiq.util.formatRational(sellResult.averageTokenPriceComparator.rational.multiply(triggerPriceProportion), spiralDecimals);
+    const triggerPriceProportion = 1 - (USER_CONFIG_PRICE_MIN_FALL_TRIGGER_PERCENT / 100);
+    const triggerPriceRational = sellResult.averageTokenPriceComparator.rational.multiply(triggerPriceProportion);
+    console.log(`    Trigger price: $${botiq.util.formatRational(triggerPriceRational, spiralDecimals)}`);
+    console.log(`    Supply trigger: ${USER_CONFIG_NEGATIVE_SUPPLY_BUY_TRIGGER}`);
     while (true){
         const negativeSupplyRational = await getNegativeSupplyRational(); 
         if (negativeSupplyRational.lesser(USER_CONFIG_NEGATIVE_SUPPLY_BUY_TRIGGER)){
             const price = await spiralTracker.getNewPrice();
-            if (price.comparator.rational.lesser(triggerPriceString)){
+            if (price.comparator.rational.lesser(triggerPriceRational)){
                 break;
             }
         }
