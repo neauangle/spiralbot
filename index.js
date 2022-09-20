@@ -104,7 +104,7 @@ while (true){
         const negativeSupplyRational = await getNegativeSupplyRational(); 
         if (negativeSupplyRational.lesser(USER_CONFIG_NEGATIVE_SUPPLY_BUY_TRIGGER)){
             const price = await spiralTracker.getNewPrice();
-            if (botiq.makeRational(price).lesser(triggerPriceString)){
+            if (price.comparator.rational.lesser(triggerPriceString)){
                 break;
             }
         }
