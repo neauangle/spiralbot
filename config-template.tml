@@ -1,0 +1,17 @@
+#paste this into a file called 'config.tml' and fill it out with your settings
+
+
+#fill either spiral-to-use or usdc-to-use
+#If you choose to use spiral-to-use, you must ensure you have enough spiral and usdc
+#If you choose to use usdc-to-use, you must ensure you have enough usdc - half of that will be sold for spiral
+spiral-to-use = 0
+usdc-to-use = 0
+
+#provide all of the following:
+ping-interval-ms = 5000
+negative-supply-sell-trigger = 4500 #this determines when to sell spiral
+negative-supply-buy-trigger = 4500 #this and 
+price-fall-percent-trigger = 5 #this determine when to buy back after selling spiral
+slippage-percent = 1,
+private-wallet-key = ""
+json-rpc-endpoint-url = ""
