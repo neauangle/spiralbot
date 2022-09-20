@@ -11,7 +11,7 @@ const USER_CONFIG_NEGATIVE_SUPPLY_BUY_TRIGGER = configs['negative-supply-buy-tri
 const USER_CONFIG_PRICE_MIN_FALL_TRIGGER_PERCENT = configs['price-fall-percent-trigger'];
 const USER_CONFIG_SLIPPAGE_PERCENT = configs['slippage-percent'];
 const USER_CONFIG_PRIVATE_WALLET_KEY = configs['private-wallet-key'];
-const JSON_RPC_ENDPOINT_URL = configs['json-rpc-endpoint-url'];
+const USER_CONFIG_JSON_RPC_ENDPOINT_URL = configs['json-rpc-endpoint-url'];
 
 
 const spiralAddress = '0x6aedb157b9ca86e32200857aa2579d47098ace39';
@@ -29,7 +29,7 @@ async function getNegativeSupplyRational(){
 
 
 const ethereumEndpoint = await botiq.ethers.createJsonRpcEndpoint({
-    accessURL: JSON_RPC_ENDPOINT_URL,
+    accessURL: USER_CONFIG_JSON_RPC_ENDPOINT_URL,
     rateLimitPerSecond: 2,
 }); 
 const spiralTracker = await ethereumEndpoint.createTracker({
