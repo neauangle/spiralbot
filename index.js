@@ -45,7 +45,8 @@ async function getNegativeSupplyRational(){
 
     let spiralToUse;
     if (USER_CONFIG_USDC_TO_USE){
-        const buyResult = await spiralTracker.buyTokenswithExact({
+        const buyResult = await botiq.ethers.UniswapV2.buyTokensWithExact({
+            tracker: spiralTracker,
             privateKey: wallet.privateKey, 
             exactComparatorQuantity: USER_CONFIG_USDC_TO_USE, 
             slippagePercent: USER_CONFIG_SLIPPAGE_PERCENT
@@ -55,12 +56,13 @@ async function getNegativeSupplyRational(){
         spiralToUse = USER_CONFIG_SPIRAL_TO_USE;
     }
     if (!spiralToUse){
-        throw Error("Must provide either USER_CONFIG_USDC_TO_USE or USER_CONFIG_SPIRAL_TO_USE");
+        throw Error("Must specify either 'spiral-to-use' or 'usdc-to-use' in config.tml");
     }
 
 
+    console.log("Ready. Running bot...");
     while (true){
-        //Step 1: add liquidity to keep spiral tokens in neutral charge
+        console.log("Step 1: Add liquidity to keep spiral tokens in neutral charge...");
         //assumption: user has enough spiral and enough usdc to pair the spiral with
         //            NOTE: Botiq will reduce quantities to match usdc balance constraints
         const addLiquidityResult = await botiq.ethers.UniswapV2.addLiquidity({
@@ -70,7 +72,7 @@ async function getNegativeSupplyRational(){
             slippagePercent: USER_CONFIG_SLIPPAGE_PERCENT
         });
         
-        //Step 2: Wait for negative supply to hit trigger
+        console.log("Step 2: Wait for negative supply to hit trigger...");
         while (true){
             const negativeSupplyRational = await getNegativeSupplyRational();
             console.log(`    Negative Supply: ${botiq.util.formatRational(negativeSupplyRational, 2)}`)
@@ -80,7 +82,7 @@ async function getNegativeSupplyRational(){
             await botiq.util.awaitMs(USER_CONFIG_PING_INTERVAL_MS);
         }
         
-        //Step 3: Remove liquidity
+        console.log("Step 3: Remove liquidity...");
         const removeLiquidityResult = await botiq.ethers.UniswapV2.removeLiquidity({
             privateKey: wallet.privateKey, 
             tracker: spiralTracker,
@@ -88,14 +90,15 @@ async function getNegativeSupplyRational(){
             pairQuantity: addLiquidityResult.pairQuantityReceived.string
         });
 
-        //Step 4: Sell spiral for usdc
-        const sellResult = await spiralTracker.sellExactTokens({
+        console.log("Step 4: Sell spiral for usdc...");
+        const sellResult = await  botiq.ethers.UniswapV2.sellExactTokens({
+            tracker: spiralTracker,
             privateKey: wallet.privateKey, 
             exactTokenQuantity: removeLiquidityResult.tokenQuantityReceived.string, 
             slippagePercent: USER_CONFIG_SLIPPAGE_PERCENT
         });
 
-        //Step 5: wait for negative supply to decrease and price to fall according to trigger settings
+        console.log("Step 5: Wait for negative supply to decrease and price to fall according to trigger settings...");
         const triggerPriceProportion = 1 - (USER_CONFIG_PRICE_MIN_FALL_TRIGGER_PERCENT / 100)
         const triggerPriceString = botiq.util.formatRational(sellResult.averageTokenPriceComparator.rational.multiply(triggerPriceProportion), spiralDecimals);
         while (true){
@@ -109,8 +112,9 @@ async function getNegativeSupplyRational(){
             await botiq.util.awaitMs(USER_CONFIG_PING_INTERVAL_MS);
         }
 
-        //Step 6: buy back spiral
-        const buyResult = await spiralTracker.buyTokenswithExact({
+        console.log("Step 6: Buy back spiral...");
+        const buyResult = await botiq.ethers.UniswapV2.buyTokensWithExact({
+            tracker: spiralTracker,
             privateKey: wallet.privateKey, 
             exactComparatorQuantity: sellResult.comparatorQuantity.string, 
             slippagePercent: USER_CONFIG_SLIPPAGE_PERCENT
