@@ -47,7 +47,7 @@ if (USER_CONFIG_USDC_TO_USE){
     const buyResult = await botiq.ethers.UniswapV2.buyTokensWithExact({
         tracker: spiralTracker,
         privateKey: wallet.privateKey, 
-        exactComparatorQuantity: USER_CONFIG_USDC_TO_USE, 
+        exactComparatorQuantity: 0.5*USER_CONFIG_USDC_TO_USE, 
         slippagePercent: USER_CONFIG_SLIPPAGE_PERCENT
     });
     spiralToUse = buyResult.tokenQuantity.string;
